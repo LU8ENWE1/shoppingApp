@@ -13,8 +13,9 @@
     <ion-card-content>
       {{item.desc}}
     </ion-card-content>
-    <ion-button v-if="!selected" @click="addToCart()">Add To Cart</ion-button>
-    <ion-button v-if="selected" @click="removeFromCart()">Remove From Cart</ion-button>
+    <!-- <ion-button v-if="!selected" @click="addToCart()">Add To Cart</ion-button>
+
+    <ion-button v-if="selected" @click="removeFromCart()">Remove From Cart</ion-button> -->
   </ion-card>
 </template>
 
@@ -34,23 +35,6 @@ export default defineComponent({
     const navigateWithId = function (id) {
       router.push('/item/' + id)
     };
-    const cartItems = ref(inject('cart').value);
-    const selected = computed((id) => {
-
-      return cartItems.value.includes(id);
-    });
-    const addToCart = function (id) {
-      cartItems.value.push(id);
-    }
-
-    const removeFromCart = function (id) {
-
-      const index = cartItems.value.indexOf(id);
-      if (index > -1) { // only splice array when item is found
-        cartItems.value.splice(index, 1); // 2nd parameter means remove one item only
-      }
-    }
-
     onMounted(async () => {
 
       var response = await fetch("https://api.npoint.io/5529943ab6c290922ca9");
@@ -65,7 +49,7 @@ export default defineComponent({
 
     });
     return {
-      items
+      items,navigateWithId
     };
   }
 });

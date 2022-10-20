@@ -1,33 +1,66 @@
 <template>
-    <ion-card>
-        <img alt="Silhouette of mountains" :src="item.image" />
-        <ion-card-header>
-            <ion-card-title>{{ item.name }}</ion-card-title>
-            <ion-card-subtitle>{{ item.price }}</ion-card-subtitle>
-        </ion-card-header>
+    <ion-page>
+        <ion-header>
+            <ion-toolbar>
+                <ion-title>Item page</ion-title>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content :fullscreen="true">
+            <ion-header collapse="condense">
+                <ion-toolbar>
+                    <ion-title size="large">item page</ion-title>
+                </ion-toolbar>
+            </ion-header>
 
-        <ion-card-content>
-            {{item.desc}}
-        </ion-card-content>
+            <!-- <ExploreContainer name="Tab 3 page" /> -->
+            <ion-card>
+                <img alt="Silhouette of mountains" :src="item.image" />
+                <ion-card-header>
+                    <ion-card-title>{{ item.name }}</ion-card-title>
+                    <ion-card-subtitle>{{ item.price }}</ion-card-subtitle>
+                </ion-card-header>
 
-        <ion-button @click="addToCart()">Add To Cart</ion-button>
-        <ion-button @click="removeFromCart()">Remove From Cart</ion-button>
-    </ion-card>
+                <ion-card-content>
+                    {{item.desc}}
+                </ion-card-content>
+
+                <ion-button v-if="!selected" @click="addToCart()">Add To Cart</ion-button>
+                <ion-button v-if="selected" @click="removeFromCart()">Remove From Cart</ion-button>
+            </ion-card>
+        </ion-content>
+    </ion-page>
 </template>
   
 <script>
-import { defineComponent, ref, onMounted } from 'vue';
-//import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-//import ExploreContainer from '@/components/ExploreContainer.vue';
+import { defineComponent, ref, onMounted, inject, computed } from 'vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
 import { useRoute } from 'vue-router';
 
 export default defineComponent({
     name: 'ItemPage',
-    //components: { ExploreContainer, IonHeader, IonToolbar, IonTitle, IonContent, IonPage },
+    components: { IonHeader, IonToolbar, IonTitle, IonContent, IonPage },
     setup() {
         const item = ref({});
         const route = useRoute();
         const { id } = route.params;
+
+        const cartItems = ref(inject('cart').value);
+
+        const selected = computed(() => {
+
+            return cartItems.value.includes(id);
+        });
+        const addToCart = function () {
+            cartItems.value.push(id);
+        }
+
+        const removeFromCart = function () {
+
+            const index = cartItems.value.indexOf(id);
+            if (index > -1) { // only splice array when item is found
+                cartItems.value.splice(index, 1); // 2nd parameter means remove one item only
+            }
+        }
 
         onMounted(async () => {
 
@@ -43,7 +76,7 @@ export default defineComponent({
         });
 
         return {
-            item
+            item,addToCart,removeFromCart,selected
         }
     }
 });
